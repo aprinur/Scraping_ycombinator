@@ -121,4 +121,5 @@ if __name__ == "__main__":
     # main('https://www.ycombinator.com/companies?batch=F24&batch=S24&batch=W24&batch=S23&batch=W23')
     # scrape_company_info('https://www.ycombinator.com/companies/archilabs')
     db_to_file(db_table='Company_in_ycombinator', filename='ycombinator company scraping result',
-               sheet_title='Scraping ycombinator', sheet_desc='This file contain 200 companies from batch W23, S23, S24, F24, W24 in ycombinator.com')
+               sheet_title='Scraping ycombinator',
+               sheet_desc='This file contain 200 companies from batch W23, S23, S24, F24, W24 in ycombinator.com')
