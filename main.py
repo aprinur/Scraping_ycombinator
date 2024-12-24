@@ -1,5 +1,6 @@
 import time
-from util import insert_to_db, db_to_file, check_data, session
+from util import insert_to_db, db_to_file, check_data, user_input
+from db_config import session
 from selenium import webdriver
 from db_config.db_format import Format_SQL
 from selenium.webdriver.common.by import By
@@ -78,48 +79,51 @@ def scrape_company_url(url, scrape_count: int = None) -> list:
     return company_urls
 
 
-def main(url):
+def main():
     to_db = []
-    to_file = []
-    while True:
-        count = input('How much companies you want to scrape ? [ empty = all]: ')
-        if count == '':
-            count = None
-            break
-        elif count.isdigit():
-            count = int(count)
-            break
-        else:
-            print('Input only numbers')
-    while True:
-        file = input('Save to xlsx and csv? y/n: ')
-        if file.lower() in ['y', 'n']:
-            break
-        else:
-            print('Choose only y/n')
-    company_urls = scrape_company_url(url, scrape_count=count)
-    print(len(company_urls))
-    for company_url in company_urls:
-        info = scrape_company_info(company_url)
-        to_db.append(info)
-        to_file.append(info)
-        if not check_data(info):
-            insert_to_db(info)
-            print(f'Company inserted to database: {info.Name}')
-        else:
-            print(f'Record already exist: {info.Name}')
+    choice = user_input()
+    if choice is False:
+        print('Exiting the program')
+        return
 
-    if file == 'y':
-        filename = input('Input filename: ')
-        db_to_file(to_file, filename)
-        print(f'Result saved as {filename}')
-    else:
-        print('Result saved to database')
+    count, url = choice
+    try:
+        company_urls = scrape_company_url(url, scrape_count=count)
+        for company_url in company_urls:
+            info = scrape_company_info(company_url)
+            to_db.append(info)
+            if not check_data(info):
+                insert_to_db(info)
+                print(f'Company inserted to database: {info.Name}')
+            else:
+                print(f'Record already exist: {info.Name}')
+
+        save_file = input(" Do You want to save the result as a fiel? (y/n): ").lower()
+        if save_file == 'y':
+            args = {}
+            filename = input('Input filename (optional): ') or None
+            sheet_title = input('Input sheet title (optional): ') or None
+            sheet_desc = input('Input sheet description (optional): ') or None
+            if filename:
+                args['filename'] = filename
+            if sheet_title:
+                args['sheet_title'] = sheet_title
+            if sheet_desc:
+                args['sheet_desc'] = sheet_desc
+
+            db_to_file(**args)
+
+    except Exception as e:
+        print(e)
 
 
 if __name__ == "__main__":
-    # main('https://www.ycombinator.com/companies?batch=F24&batch=S24&batch=W24&batch=S23&batch=W23')
-    # scrape_company_info('https://www.ycombinator.com/companies/archilabs')
-    db_to_file(db_table='Company_in_ycombinator', filename='ycombinator company scraping result',
-               sheet_title='Scraping ycombinator',
-               sheet_desc='This file contain 200 companies from batch W23, S23, S24, F24, W24 in ycombinator.com')
+    main()
+
+# sample url: 'https://www.ycombinator.com/companies?batch=F24&batch=S24&batch=W24&batch=S23&batch=W23'
+
+"""
+Next feature:
+1. add multiple table so user can choose which table to save as external file
+2.  
+"""
