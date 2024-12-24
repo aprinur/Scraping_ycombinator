@@ -8,4 +8,4 @@ This is a program to scrape company information from ycombinator website using s
 ---
 ## Why I create this program ?
 
-Well the reason is simple, because I need the data of company in w combinator 
+Well the reason is simple, because I need the data of company in y combinator 
