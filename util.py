@@ -58,15 +58,15 @@ Choose Option (1/2/3) : """)
 
         if user_option == '1':
             while True:
-                count = input('Input total page to scrape (empty = all pages): ')
-                if count and not count.isdigit():
-                    print('Input must be a number')
-                    continue
-                count = int(count) if count else None
                 url = input('Input Url after filtering company: ')
                 if not url.strip():
                     print(" Url cannot be empty")
                     continue
+                count = input('Input total company to scrape (empty = all company): ')
+                if count and not count.isdigit():
+                    print('Input must be a number')
+                    continue
+                count = int(count) if count else None
                 return count, url
 
         elif user_option == '2':
