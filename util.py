@@ -1,11 +1,12 @@
 import pandas, datetime
-from db_config import session, engine
-from db_config.db_format import Format_SQL
+from db_config.db_format import create_db_table
+from db_config import Session, engine, Base
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, Font
+from sqlalchemy import inspect
 
 
-def db_to_file(db_table: str = 'Company_in_ycombinator', filename: str = 'ycombinator company scraping result', sheet_title: str = 'Scraping result', sheet_desc: str = None ):
+def db_to_file(sheet_title: str, db_table, filename: str = 'ycombinator company scraping result', sheet_desc: str = None ):
     ''' Method to save db into excel and csv file '''
     date = datetime.datetime.now().strftime('%d_%B_%Y')
     query = f"SELECT * FROM {db_table}"
@@ -29,25 +30,28 @@ def db_to_file(db_table: str = 'Company_in_ycombinator', filename: str = 'ycombi
 
 
 
-def insert_to_db(scrape_result: Format_SQL):
+def insert_to_db(scrape_result, table_class):
     """ This method used to insert data into database."""
-    session.add(scrape_result)
-    session.commit()
+    with Session() as session:
+        table_instance = table_class(**scrape_result)
+        session.add(table_instance)
+        session.commit()
 
 
-def check_data(data):
+def check_data(data, table_class):
     """ Check is scraped data already in database """
-    exists =  session.query(Format_SQL).filter_by(Name=data.Name).first()
-    return exists is not None
+    with Session() as session:
+        exists =  session.query(table_class).filter_by(Name=data['Name']).first()
+        return exists is not None
 
 
 
 def user_input():
-
+    """ Function to handling what to do """
     while True:
         user_option = input("""
 1. Scrape company
-2. Export database into xlsx and csv
+2. Export database into xlsx and csv file
 3. Quit
 
 Choose Option (1/2/3) : """)
@@ -74,6 +78,15 @@ Choose Option (1/2/3) : """)
                 filename = input('Input filename (optional): ') or None
                 sheet_title = input('Input sheet title (optional): ') or None
                 sheet_desc = input('Input sheet description (optional) : ') or None
+                while True:
+                    tablename = input('Input table name: ')
+                    if not tablename.strip():
+                        print('Table name cannot be empty')
+                        continue
+                    if not check_table_exists(tablename, engine):
+                        print("Table not found")
+                        continue
+                    break
 
                 args = {}
                 if filename:
@@ -82,6 +95,7 @@ Choose Option (1/2/3) : """)
                     args['sheet_title'] = sheet_title
                 if sheet_desc:
                     args['sheet_desc'] = sheet_desc
+                args['db_table'] = tablename
 
                 try:
                     db_to_file(**args)
@@ -92,3 +106,19 @@ Choose Option (1/2/3) : """)
             return False
         else:
             print('Out of option')
+
+
+def check_table_exists(tablename: str, engine=engine):
+        inspector = inspect(engine)
+        return tablename in inspector.get_table_names()
+
+
+def get_existing_table_class(tablename: str):
+    class ExistingTable(Base):
+        __tablename__ = tablename
+
+    if not engine.dialect.has_table(engine, tablename):
+        raise ValueError(f'Table {tablename} does not exist in the database')
+
+    Base.metadata.reflect(engine)
+    return ExistingTable
