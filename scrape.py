@@ -1,5 +1,7 @@
 import time
+import traceback
 from db_config import driver
+from db_config.db_format import YCombinatorTable
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
@@ -84,4 +86,5 @@ def scrape_company_url(url, scrape_count: int = None) -> list:
         return company_urls
     except Exception as e:
         print(f'Error while scraping url {url}: {e}')
+        traceback.print_exc()
         return None

@@ -1,12 +1,12 @@
 import pandas, datetime
-from db_config.db_format import create_db_table
 from db_config import Session, engine, Base
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, Font
 from sqlalchemy import inspect
+import traceback
 
 
-def db_to_file(sheet_title: str, db_table, filename: str = 'ycombinator company scraping result', sheet_desc: str = None ):
+def db_to_file( db_table, sheet_desc: str, sheet_title: str = "YCombinator Scraping Result", filename: str = 'ycombinator company scraping result' ):
     ''' Method to save db into excel and csv file '''
     date = datetime.datetime.now().strftime('%d_%B_%Y')
     query = f"SELECT * FROM {db_table}"
@@ -39,9 +39,9 @@ def insert_to_db(scrape_result, table_class):
 
 
 def check_data(data, table_class):
-    """ Check is scraped data already in database """
+    """ Check if scraped data already in database """
     with Session() as session:
-        exists =  session.query(table_class).filter_by(Name=data['Name']).first()
+        exists =  session.query(table_class).filter_by(Name=data["Name"]).first()
         return exists is not None
 
 
@@ -62,11 +62,14 @@ Choose Option (1/2/3) : """)
 
         if user_option == '1':
             while True:
-                url = input('Input Url after filtering company: ')
+                url = input('Url: ')
                 if not url.strip():
                     print(" Url cannot be empty")
                     continue
-                count = input('Input total company to scrape (empty = all company): ')
+                break
+
+            while True:
+                count = input('Total Company (empty = all company): ')
                 if count and not count.isdigit():
                     print('Input must be a number')
                     continue
@@ -75,18 +78,20 @@ Choose Option (1/2/3) : """)
 
         elif user_option == '2':
             while True:
-                filename = input('Input filename (optional): ') or None
-                sheet_title = input('Input sheet title (optional): ') or None
-                sheet_desc = input('Input sheet description (optional) : ') or None
                 while True:
                     tablename = input('Input table name: ')
                     if not tablename.strip():
                         print('Table name cannot be empty')
                         continue
                     if not check_table_exists(tablename, engine):
-                        print("Table not found")
+                        print("Table not found! Enter existing table from database ")
                         continue
                     break
+                filename = input('Input filename (optional): ').strip() or None
+                sheet_title = input('Input sheet title (optional): ').strip() or None
+                sheet_desc = input('Input sheet description (optional) : ').strip() or (f'This file saved from table '
+                                                                                        f'{tablename} in ycombinator '
+                                                                                        f'database')
 
                 args = {}
                 if filename:
@@ -101,7 +106,8 @@ Choose Option (1/2/3) : """)
                     db_to_file(**args)
                     return False
                 except Exception as e:
-                    print(e)
+                    print(f'Cannot save table to file: {e}')
+                    traceback.print_exc()
         elif user_option == '3':
             return False
         else:
@@ -113,12 +119,3 @@ def check_table_exists(tablename: str, engine=engine):
         return tablename in inspector.get_table_names()
 
 
-def get_existing_table_class(tablename: str):
-    class ExistingTable(Base):
-        __tablename__ = tablename
-
-    if not engine.dialect.has_table(engine, tablename):
-        raise ValueError(f'Table {tablename} does not exist in the database')
-
-    Base.metadata.reflect(engine)
-    return ExistingTable

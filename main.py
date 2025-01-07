@@ -1,9 +1,10 @@
-from util import insert_to_db, db_to_file, check_data, user_input, check_table_exists, get_existing_table_class
-from db_config.db_format import create_db_table
+import traceback
+from util import insert_to_db, db_to_file, check_data, user_input, check_table_exists
+from db_config.db_format import create_db_table, get_existing_table_class
 from scrape import scrape_company_info, scrape_company_url
 
 
-def main():
+def scrape():
     tablename = None
     try:
         choice = user_input()
@@ -15,7 +16,7 @@ def main():
         table_class = None
         table_ready = False
         while not table_ready:
-            tablename = input('Input table name for database: ')
+            tablename = input('Input table name: ')
             if not tablename.strip():
                 print('Table name cannot be empty!')
                 continue
@@ -37,7 +38,8 @@ def main():
                             table_ready = True
                             break
                         except ValueError as e:
-                            print(e)
+                            print(f'Error on get existing table: {e}')
+                            traceback.print_exc()
                             return
                     else:
                         print('Please input the new table name')
@@ -55,15 +57,17 @@ def main():
 
         company_urls = scrape_company_url(url, scrape_count=count)
         for company_url in company_urls:
-            info = scrape_company_info(company_url, table_class)
-            if not check_data(info, table_class):
-                insert_to_db(info, table_class)
-                print(f'Company inserted to database: {info['Name']}')
+            result = scrape_company_info(company_url, table_class)
+            if not check_data(result, table_class):
+                insert_to_db(result, table_class)
+                print(f'Company inserted to database: {result["Name"]}')
             else:
-                print(f'Record already exist: {info['Name']}')
+                print(f'Record already exist: {result["Name"]}')
         return tablename
     except Exception as e:
         print(e)
+        traceback.print_exc()
+        return False
 
 
 def save_as_file(tablename):
@@ -71,9 +75,9 @@ def save_as_file(tablename):
 
     if save_file == 'y':
         args = {}
-        filename = input('Input filename (optional): ') or None
-        sheet_title = input('Input sheet title (optional): ') or 'Scraping result'
-        sheet_desc = input('Input sheet description (optional): ') or None
+        filename = input('Input filename (optional): ').strip() or None
+        sheet_title = input('Input sheet title (optional): ').strip() or None
+        sheet_desc = input('Input sheet description (optional): ').strip() or f'This file saved from table {tablename} in ycombinator database'
         if filename:
             args['filename'] = filename
         if sheet_title:
@@ -86,9 +90,13 @@ def save_as_file(tablename):
 
     else:
         print('Program closed')
+        return
 
 
 if __name__ == "__main__":
     table_name = main()
     save_as_file(table_name)
 
+""" 
+return to main menu after performing task
+"""
