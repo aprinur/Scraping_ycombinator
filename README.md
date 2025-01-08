@@ -8,21 +8,24 @@ This is a program to scrape company information from ycombinator website using s
 ## Why I create this program ?
 
 ---
-Well the reason is simple, because I need the data of company in y combinator 
+
+Well, the reason is simple because I need the data of company in y combinator 
 
 ## So, how to use this program ?
-
 ---
 - First of all you must have python installed in your device, and activate venv (optional). 
 - Next install dependencies from requirement.txt file
+
 ```
   pip install -r requirements.txt
 ```
 
 - After all dependencies got installed you can run
+
 ```
     main.py
 ```
+
 - When main.py is running, there will be 3 options
 
 1. Scrape Company
@@ -37,7 +40,7 @@ you will ask to fill several parameters which is Url, Number of company to scrap
 
 <ol>
 • Url 
-<p> Take a look on the picture below </p>
+<p> Take a look at the picture below </p>
 
 ![Screenshot 2025-01-07 114134](https://github.com/user-attachments/assets/a0ccc873-5c9c-4d1e-987d-daf7af1682b4)
 <ol>
