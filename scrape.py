@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 
 def scrape_company_info(url: str):
@@ -57,6 +57,9 @@ def scrape_company_info(url: str):
 
     except TimeoutException:
         print('Timeout waiting for page to load')
+        return False
+    except NoSuchElementException as e:
+        print(f'Scraping issue in {e}')
         return False
 
 
