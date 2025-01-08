@@ -1,19 +1,14 @@
 # Ycombinator website scraper
-
----
-
 This is a program to scrape company information from ycombinator website using selenium and save it into sqlite database using Sqlalchemy
 <br>
 
 ## Why I create this program ?
 
----
-Well the reason is simple, because I need the data of company in y combinator 
+Well the reason is simple, because I need the data of company in y combinator, and i willingly share the code to you
 
 ## So, how to use this program ?
 
----
-- First of all you must have python installed in your device, and activate venv (optional). 
+- First of all you must have python installed in your device, and then activate venv ( **Optional** ). 
 - Next install dependencies from requirement.txt file
 ```
   pip install -r requirements.txt
@@ -27,13 +22,13 @@ Well the reason is simple, because I need the data of company in y combinator
 
 1. Scrape Company
 2. Export database into xlsx and csv file
-3. Exit 
+3. Exit
+<br>
 
----
 <ul>
 <li> Scrape Company </li>
 <p>As the option's name, you will scrape the company's information from this option. To scrape company's information 
-you will ask to fill several parameters which is Url, Number of company to scrape and Table name</p>
+you need to fill several parameters which is Url, Number of company to scrape and Table name</p>
 
 <ol>
 • Url 
@@ -65,10 +60,10 @@ Export database into xlsx and csv file
 • Table Name
 <p> Table name must be a table that exist in the database</p>
 
-• File name ( Optional )
+• File name ( __Optional__ )
 <p> Fill this form with the name you want or leave it empty and the file's name will created automatically</p>
 
-• Sheet title and sheet description ( Optional ) 
+• Sheet title and sheet description ( __Optional__ ) 
 
 ![ycombinator - Copy](https://github.com/user-attachments/assets/9bf180c6-ecb0-4f3b-9b14-8af6cf9ca0f8)
 
@@ -85,7 +80,6 @@ Exit
 
 ## What does this program collected ?
 
----
 This program will scrape company name, batch, sector, region, company description, founding date, founders, incubator, 
 source url and company url. You can save it in a database only or as an Excel and Csv file too. The previous scraping 
 database result will stay, in case you lose the Excel file and need to save it 
