@@ -1,102 +1,64 @@
 import traceback
-from util import insert_to_db, db_to_file, check_data, user_input, check_table_exists
-from db_config.db_format import create_db_table, get_existing_table_class
+import keyword
+from util import insert_to_db, check_data, user_input_scraping, user_input_and_save_db_as_file
 from scrape import scrape_company_info, scrape_company_url
 
 
 def scrape():
-    tablename = None
     try:
-        choice = user_input()
-        if choice is False:
-            print('Exiting the program')
-            return
-
-        count, url = choice
-        table_class = None
-        table_ready = False
-        while not table_ready:
-            tablename = input('Input table name: ')
-            if not tablename.strip():
-                print('Table name cannot be empty!')
-                continue
-
-            if not tablename.isidentifier():
-                raise ValueError('Table name must be a valid identifier')
-
-            if check_table_exists(tablename):
-                while True:
-                    append = input('Table already exist, do you want to append data to the existing table (y/n): ').lower()
-                    if append not in ['y', 'n']:
-                        print("Choose only y or n")
-                        continue
-
-                    if append == 'y':
-                        try:
-                            table_class = get_existing_table_class(tablename)
-                            print(f'Appending data to the existing table: {tablename}.')
-                            table_ready = True
-                            break
-                        except ValueError as e:
-                            print(f'Error on get existing table: {e}')
-                            traceback.print_exc()
-                            return
-                    else:
-                        print('Please input the new table name')
-                        break
-            else:
-                try:
-                    table_class = create_db_table(tablename)
-                    print(f'New table created: {tablename}')
-                    table_ready = True
-                    break
-
-                except ValueError as e:
-                    print(f'Invalid table name: {e}')
-                    continue
-
+        count, url, table_class = user_input_scraping()
         company_urls = scrape_company_url(url, scrape_count=count)
+
         for company_url in company_urls:
-            result = scrape_company_info(company_url, table_class)
+            result = scrape_company_info(company_url)
+            if not result:
+                print(f'Scraping issue in {company_url}')
+                continue
             if not check_data(result, table_class):
                 insert_to_db(result, table_class)
                 print(f'Company inserted to database: {result["Name"]}')
             else:
                 print(f'Record already exist: {result["Name"]}')
-        return tablename
+
+        save_file = input("Do You want to save the result as a file? (y/n): ").lower()
+        if save_file == 'y':
+            user_input_to_save_db_as_file(tablename)
+        else:
+            print('Program closed')
+            return
     except Exception as e:
         print(e)
         traceback.print_exc()
-        return False
-
-
-def save_as_file(tablename):
-    save_file = input("Do You want to save the result as a file? (y/n): ").lower()
-
-    if save_file == 'y':
-        args = {}
-        filename = input('Input filename (optional): ').strip() or None
-        sheet_title = input('Input sheet title (optional): ').strip() or None
-        sheet_desc = input('Input sheet description (optional): ').strip() or f'This file saved from table {tablename} in ycombinator database'
-        if filename:
-            args['filename'] = filename
-        if sheet_title:
-            args['sheet_title'] = sheet_title
-        if sheet_desc:
-            args['sheet_desc'] = sheet_desc
-        args['db_table'] = tablename
-
-        db_to_file(**args)
-
-    else:
-        print('Program closed')
         return
 
 
-if __name__ == "__main__":
-    table_name = main()
-    save_as_file(table_name)
+def main_menu():
+    while True:
 
-""" 
-return to main menu after performing task
-"""
+        user_option = input("""
+1. Scrape company
+2. Export database into xlsx and csv file
+3. Quit
+
+Choose Option (1/2/3) : """)
+
+        if not user_option.isdigit():
+            print('Input only number')
+            continue
+
+        if user_option == '1':
+            scrape()
+
+        elif user_option == '2':
+            user_input_and_save_db_as_file()
+
+        elif user_option == '3':
+            print('Closing program')
+            return
+
+        else:
+            print('Out of option')
+
+
+if __name__ == "__main__":
+    main_menu()

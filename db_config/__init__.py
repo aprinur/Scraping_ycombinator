@@ -12,3 +12,9 @@ Session = scoped_session(sessionmaker(bind=engine))
 options = webdriver.ChromeOptions()
 options.add_argument('--headless')
 driver = webdriver.Chrome(options=options)
+
+sql_reserved_keyword = {
+    "select", "insert", "update", "delete", "from", "where", "join",
+    "group", "by", "order", "limit", "table", "create", "drop",
+    "alter", "index", "and", "or", "not", "null", "into", "values", "all"
+}
