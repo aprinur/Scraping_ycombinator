@@ -1,31 +1,24 @@
 import traceback
 import keyword
-from util import insert_to_db, check_data, user_input_scraping, user_input_and_save_db_as_file
-from scrape import scrape_company_info, scrape_company_url
+from db_config import driver
+from util import user_input_scraping, user_input_and_save_db_as_file, save_as_file_confirm
+from scrape import scrape_with_count, scrape_without_count
 
 
 def scrape():
     try:
-        count, url, table_class = user_input_scraping()
-        company_urls = scrape_company_url(url, scrape_count=count)
-
-        for company_url in company_urls:
-            result = scrape_company_info(company_url)
-            if not result:
-                print(f'Scraping issue in {company_url}')
-                continue
-            if not check_data(result, table_class):
-                insert_to_db(result, table_class)
-                print(f'Company inserted to database: {result["Name"]}')
-            else:
-                print(f'Record already exist: {result["Name"]}')
-
-        save_file = input("Do You want to save the result as a file? (y/n): ").lower()
-        if save_file == 'y':
-            user_input_to_save_db_as_file(tablename)
+        count, url, table_class, tablename = user_input_scraping()
+        if count is not None:
+            scrape_with_count(url, table_class=table_class, scrape_count=count)
+            if save_as_file_confirm():
+                user_input_and_save_db_as_file(tablename)
+                return
         else:
-            print('Program closed')
-            return
+            scrape_without_count(url, table_class)
+            if save_as_file_confirm():
+                user_input_and_save_db_as_file(tablename)
+                return
+
     except Exception as e:
         print(e)
         traceback.print_exc()

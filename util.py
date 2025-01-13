@@ -136,9 +136,9 @@ def user_input_scraping():
 
                 if append == 'y':
                     try:
-                        table_class = get_existing_table_class(tablename)
-                        print(f'Appending data to the existing table: {tablename}.')
-                        return count, url, table_class
+                        table_class = get_existing_table_class(table_name)
+                        print(f'Appending data to the existing table: {table_name}.')
+                        return count, url, table_class, table_name
                     except ValueError as e:
                         print(f'Error on get existing table: {e}')
                         traceback.print_exc()
@@ -149,7 +149,7 @@ def user_input_scraping():
             else:
                 new_table_class = create_db_table(table_name)
                 print(f'Table {table_name} has created ')
-                return count, url, new_table_class
+                return count, url, new_table_class, table_name
 
 
 
@@ -176,3 +176,16 @@ def tablename_validator(name) -> bool:
         return False
 
     return True
+
+
+def save_as_file_confirm():
+
+    while True:
+        save = input("Save result as file (y/n) : ").lower()
+        if save and save in ['y', 'n']:
+            if save == 'y':
+               return True
+            return False
+        else:
+            print('Choose only y or n')
+            continue
