@@ -268,4 +268,4 @@ cython_debug/
 .idea/
 *.xls;xlsx;csv
 trial.py
-
+*.db

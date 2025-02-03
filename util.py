@@ -10,8 +10,7 @@ from db_config import Session, engine, Base, sql_reserved_keyword
 from db_config.db_format import create_db_table, get_existing_table_class
 
 
-
-def db_to_file( db_table, sheet_desc: str, sheet_title: str = "YCombinator Scraping Result", filename: str = 'ycombinator.com scraping result' ):
+def db_to_file( db_table, sheet_desc: str, sheet_title: str = "YCombinator Scraping Result", filename: str = 'ycombinator.com_scraping_result' ):
     ''' Method to save db into excel and csv file '''
     date = datetime.datetime.now().strftime('%d_%B_%Y')
     query = f"SELECT * FROM {db_table}"
