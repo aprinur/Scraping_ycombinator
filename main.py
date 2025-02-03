@@ -1,8 +1,6 @@
 import traceback
-import keyword
-from db_config import driver
-from util import user_input_scraping, user_input_and_save_db_as_file, save_as_file_confirm
-from scrape import scrape_with_count, scrape_without_count
+from sc.util import user_input_scraping, user_input_and_save_db_as_file, save_as_file_confirm
+from sc.scrape import scrape_with_count, scrape_without_count
 
 
 def scrape():
