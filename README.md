@@ -8,7 +8,7 @@ Well the reason is simple, because I need the data of company in y combinator, a
 
 ## So, how to use this program ?
 
-- First of all you must have python installed in your device, and then activate venv ( **Optional** ). 
+- First of all you must have python and sqlite database installed in your device.
 - Next install dependencies from requirement.txt file
 
 ```
