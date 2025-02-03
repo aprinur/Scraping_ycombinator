@@ -266,6 +266,7 @@ cython_debug/
 
 # Specific project
 .idea/
-*.xls;xlsx;csv
+*.xlsx
+*.csv
 trial.py
 *.db
