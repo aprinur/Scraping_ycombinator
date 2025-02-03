@@ -1,10 +1,9 @@
+import os
 import tempfile
-
+from pathlib import Path
+from selenium import webdriver
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session, declarative_base
-from selenium import webdriver
-import os
-from pathlib import Path
 
 
 def get_db_path():

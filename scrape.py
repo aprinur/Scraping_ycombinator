@@ -2,7 +2,6 @@ import time
 import traceback
 from util import check_data, insert_to_db, save_as_file_confirm, user_input_and_save_db_as_file
 from db_config import driver
-from db_config.db_format import YCombinatorTable
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains

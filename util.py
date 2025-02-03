@@ -172,7 +172,7 @@ def tablename_validator(name) -> bool:
         return False
 
     if name in keyword.kwlist or name.lower() in sql_reserved_keyword:
-        print(f"Table name '{tablename}' is a reserved keyword and cannot be used")
+        print(f"Table name '{name}' is a reserved keyword and cannot be used")
         return False
 
     return True
