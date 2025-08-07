@@ -51,7 +51,7 @@ source venv/bin/activate
 <ul>
 <li> Scrape Company </li>
 <p>As the option's name, you will scrape the company's information from this option. To scrape company's information 
-you need to fill several parameters which is Url, Number of company to scrape and Table name</p>
+you need to fill several parameters which is URL, quantity of company to scrape, and table name</p>
 
 <ol>
 • Url 

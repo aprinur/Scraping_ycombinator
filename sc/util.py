@@ -19,7 +19,7 @@ def db_to_file(db_table, sheet_desc: str, sheet_title: str = "YCombinator Scrapi
     query = f"SELECT * FROM {db_table}"
     df = pandas.read_sql_query(query, engine)
 
-    save_dir = os.path.join(os.path.expanduser('~'), 'Downloads')
+    save_dir = os.path.join(os.path.expanduser('~'), r'Downloads\Documents')
     os.makedirs(save_dir, exist_ok=True)
 
     excel_path = os.path.join(save_dir, f'{filename}_{date}.xlsx')
@@ -73,8 +73,8 @@ def user_input_and_save_db_as_file(db_table=None):
         while True:
             inspector = inspect(engine)
             print('\nTables in database:')
-            for table in inspector.get_table_names():
-                print(table)
+            for num, table in enumerate(inspector.get_table_names()):
+                print(f'{num+1}. {table}')
 
             tablename = input('\nEnter table name: ')
             if tablename and tablename.lower() == 'quit':

@@ -84,6 +84,7 @@ def scrape_with_count(url, table_class, scrape_count: int = None):
     try:
         driver.get(url)
         actions = ActionChains(driver)
+        previous_count = 0
 
         while scraped_url < scrape_count:
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, '_company_i9oky_355')))
@@ -129,6 +130,12 @@ def scrape_with_count(url, table_class, scrape_count: int = None):
                 last_element = elements[-1]
                 actions.move_to_element(last_element).perform()
                 time.sleep(1)
+
+                new_elements = driver.find_elements(By.CLASS_NAME, '_company_i9oky_355')
+                if len(new_elements) == previous_count:
+                    print('No new companies found, return to main menu.')
+                    return False
+                previous_count = len(new_elements)
             except IndexError:
                 if issued_url:
                     for url in issued_url:
