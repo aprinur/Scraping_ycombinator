@@ -1,6 +1,6 @@
 # Ycombinator website scraper
 
-This is a program to scrape company information from ycombinator website using selenium and save it into sqlite database using Sqlalchemy
+This is a program to scrape company information from ycombinator website using selenium and save it into sqlite database using Sqlalchemy. 
 <br>
 
 ## Why I create this program ?
@@ -9,7 +9,7 @@ Well the reason is simple, because I need the data of company in ycombinator, an
 
 ## So, how to use this program ?
 <ol>
-<li>First of all you must have the latest Python and SQLite database in your device.</li> 
+<li>First of all you must have the latest Python, SQLite database, and a terminal in your device.</li> 
 <li>Next create virtual environment to keep your environment clean.</li>
 
 ```
