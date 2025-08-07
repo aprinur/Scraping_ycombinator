@@ -1,23 +1,26 @@
 import time
 import traceback
-from util import check_data, insert_to_db, save_as_file_confirm, user_input_and_save_db_as_file
-from db_config import driver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support import expected_conditions as EC
+
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+
+from db_config import driver
+from sc.util import check_data, insert_to_db
 
 
 def scrape_company_info(url: str, sectors: str = None):
     try:
         driver.get(url)
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR,
-                                                                        r'.relative.isolate.z-0.border-retro-sectionBorder.sm\:pr-\[13px\].ycdcPlus\:pr-0.pt-2.sm\:pt-4.lg\:pt-6.pb-2.sm\:pb-4.lg\:pb-6')))
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME,
+                                                                        r'flex.flex-col.gap-8.sm\:flex-row')))
 
         table = driver.find_element(By.CLASS_NAME, 'space-y-3')
-        name = table.find_element(By.TAG_NAME, 'h1').text
-        batch = table.find_element(By.CLASS_NAME, 'flex').find_element(By.TAG_NAME, 'span').text
+        company_name = table.find_element(By.CLASS_NAME, 'text-3xl.font-bold').text
+        batch = table.find_element(By.CLASS_NAME, r'flex.flex-row.items-center.gap-\[6px\]').find_element(By.TAG_NAME,
+                                                                                                          'span').text
         elements = table.find_element(By.CSS_SELECTOR, 'div.align-center').find_elements(By.TAG_NAME, 'a')
 
         if sectors is None:
@@ -25,34 +28,39 @@ def scrape_company_info(url: str, sectors: str = None):
         else:
             sector = sectors
 
-        texts = driver.find_elements(By.CSS_SELECTOR,
-                                     r'.relative.isolate.z-0.border-retro-sectionBorder.sm\:pr-\[13px\].ycdcPlus\:pr-0.pt-1.sm\:pt-2.lg\:pt-3.pb-1.sm\:pb-2.lg\:pb-3')
-        company_desc = texts[0].text
-        founding_date = driver.find_element(By.XPATH, "//span[text()='Founded:']/following-sibling::span").text
-        location = driver.find_element(By.XPATH, "//span[text()='Location:']/following-sibling::span").text
+        company_desc = driver.find_element(By.CLASS_NAME, 'prose.max-w-full.whitespace-pre-line').text
+        company_card = driver.find_element(By.CSS_SELECTOR, r'div[class="ycdc-card-new space-y-1.5 sm:w-[300px]"]')
 
-        if driver.find_element(By.CSS_SELECTOR, r'.flex.flex-row.items-center.gap-x-3'):
-            founders = '| '.join(i.find_element(By.CLASS_NAME, 'font-bold').text.strip() for i in
-                                 driver.find_elements(By.CSS_SELECTOR, r'.flex.flex-row.items-center.gap-x-3'))
-        elif driver.find_element(By.CSS_SELECTOR, r'.flex.flex-row.flex-col.items-start.gap-3.md\:flex-row'):
-            founders = '| '.join(i.find_element(By.CLASS_NAME, 'font-bold').text for i in
-                                 driver.find_elements(By.CSS_SELECTOR,
-                                                      r'.flex.flex-row.flex-col.items-start.gap-3.md\:flex-row'))
-        else:
-            founders = None
+        founded_element = company_card.find_elements(By.XPATH, ".//div[.//span[text()='Founded:']]/span[2]")
+        founded = founded_element[0].text if founded_element else None
+
+        location = company_card.find_elements(By.XPATH, "//div[.//span[text()='Location:']]/span[2]")
+        location = location[0].text if location else None
+
+        founder_box = driver.find_element(By.CLASS_NAME, 'space-y-4')
+        founders = []
+        for content in founder_box.find_elements(By.CLASS_NAME, 'min-w-0.flex-1'):
+            name = content.find_element(By.CLASS_NAME, 'text-xl.font-bold').text
+            if content.find_element(By.CLASS_NAME, r'text-gray-600'):
+
+                position = content.find_element(By.CLASS_NAME, r'text-gray-600').text
+            else:
+                position = content.find_element(By.CSS_SELECTOR, r'pt-1.text-gray-600').text
+            founders.append(f"{name} ({position if position else ''})")
+        founders = ' | '.join(founders)
         company_url = driver.find_element(By.CSS_SELECTOR, r'.mb-2.whitespace-nowrap.md\:mb-0').get_attribute('href')
         region = ' '.join(element.text for element in elements if 'location' in element.get_attribute('href'))
         source_url = driver.current_url
         incubator = driver.find_element(By.CSS_SELECTOR, r'.mt-8.text-base.md\:order-1.md\:mt-0').text.removeprefix(
-            '© 2024 ')
+            '© 2025 ')
 
         scraped_data = {
-            "Name": name,
+            "Company_Name": company_name,
             "Batch": batch,
             "Sector": sector,
             "Region": region,
             "Company_Desc": company_desc,
-            "Founding_Date": founding_date,
+            "Founding_Date": founded,
             "Founders": founders,
             "Incubator": incubator,
             "Location": location,
@@ -78,14 +86,14 @@ def scrape_with_count(url, table_class, scrape_count: int = None):
         actions = ActionChains(driver)
 
         while scraped_url < scrape_count:
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, '_company_1pgsr_355')))
-            elements = driver.find_elements(By.CLASS_NAME, '_company_1pgsr_355')
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, '_company_i9oky_355')))
+            elements = driver.find_elements(By.CLASS_NAME, '_company_i9oky_355')
 
             for index, element in enumerate(elements):
                 if scraped_url >= scrape_count:
-                    return
+                    return None
 
-                elements = driver.find_elements(By.CLASS_NAME, '_company_1pgsr_355')
+                elements = driver.find_elements(By.CLASS_NAME, '_company_i9oky_355')
                 element = elements[index]
 
                 url = element.get_attribute('href')
@@ -107,10 +115,9 @@ def scrape_with_count(url, table_class, scrape_count: int = None):
 
                 if not check_data(data, table_class):
                     insert_to_db(data, table_class)
-                    print(f'Data added to table: {data["Name"]}')
                     scraped_url += 1
                 else:
-                    print(f'Data {data["Name"]} already exist')
+                    print(f'Data {data["Company_Name"]} already exist')
                     scraped_url += 1
 
                 driver.close()
@@ -118,7 +125,7 @@ def scrape_with_count(url, table_class, scrape_count: int = None):
 
             try:
                 if scraped_url >= scrape_count:
-                    return
+                    return True
                 last_element = elements[-1]
                 actions.move_to_element(last_element).perform()
                 time.sleep(1)
@@ -126,30 +133,34 @@ def scrape_with_count(url, table_class, scrape_count: int = None):
                 if issued_url:
                     for url in issued_url:
                         if scraped_url >= scrape_count:
-                            return
+                            return True
                         data = scrape_company_info(url)
                         if not check_data(data, table_class):
                             insert_to_db(data, table_class)
-                            print(f'Data inserted to database: {data["Name"]}')
+                            print(f'Data inserted to database: {data["Company_Name"]}')
                             scraped_url += 1
-                return
+                return True
+        return True
 
     except TimeoutException as e:
         print(e)
+        return None
     except NoSuchElementException as e:
         print(e)
+        return None
     except Exception as e:
-        print(f'Error while scraping url {url}: {e}')
+        print(f'Error while scraping {url}: {e}')
         traceback.print_exc()
         return []
 
 
-def get_sector(element) -> object:
+def get_sector(element) -> str | None:
     """ Function to scrape sector """
+    main_url = 'https://www.ycombinator.com'
     try:
-        elements = element.find_elements(By.CSS_SELECTOR, '._tagLink_1pgsr_1040')
+        elements = element.find_elements(By.CSS_SELECTOR, '._tagLink_i9oky_1040')
         sector = ", ".join([i.text for i in elements if 'industry' in i.get_attribute('href')])
-        return sector
+        return f'{main_url}{sector}'
     except NoSuchElementException:
         return None
 
@@ -166,11 +177,11 @@ def scrape_without_count(url, table_class):
         previous_count = 0
 
         while retry_count < max_retries:
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, '_company_1pgsr_355')))
-            elements = driver.find_elements(By.CSS_SELECTOR, '._company_1pgsr_355')
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, '_company_i9oky_355')))
+            elements = driver.find_elements(By.CSS_SELECTOR, '._company_i9oky_355')
 
             for index, element in enumerate(elements):
-                elements = driver.find_elements(By.CSS_SELECTOR, '._company_1pgsr_355')
+                elements = driver.find_elements(By.CSS_SELECTOR, '._company_i9oky_355')
                 element = elements[index]
 
                 url = element.get_attribute('href')
@@ -189,9 +200,9 @@ def scrape_without_count(url, table_class):
                 if data:
                     if not check_data(data, table_class):
                         insert_to_db(data, table_class)
-                        print(f'Inserted to database: {data["Name"]}')
+                        print(f'Inserted to database: {data["Company_Name"]}')
                     else:
-                        print(f'Record already exist: {data["Name"]}')
+                        print(f'Record already exist: {data["Company_Name"]}')
 
                 else:
                     issued_url.append(url)
@@ -227,6 +238,8 @@ def scrape_without_count(url, table_class):
 
                 print('Out of element')
                 break
+
+        return None
 
     except Exception as e:
         print(f'Error while scraping url {url}: {e}')

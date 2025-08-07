@@ -1,13 +1,23 @@
 import traceback
-from sc.util import user_input_scraping, user_input_and_save_db_as_file, save_as_file_confirm
-from sc.scrape import scrape_with_count, scrape_without_count
+
+from sc import user_input_scraping, scrape_with_count, save_as_file_confirm, user_input_and_save_db_as_file, \
+    scrape_without_count
 
 
-def scrape():
+def execution():
     try:
-        count, url, table_class, tablename = user_input_scraping()
+        parameter = user_input_scraping()
+        if not parameter:
+            quit()
+        count = parameter['count']
+        url = parameter['url']
+        table_class = parameter['new_table_class'] if 'new_table_class' in parameter.keys() else (
+            parameter)['table_class']
+        tablename = parameter['table_name']
+
         if count is not None:
-            scrape_with_count(url, table_class=table_class, scrape_count=count)
+            if not scrape_with_count(url, table_class=table_class, scrape_count=count):
+                return
             if save_as_file_confirm():
                 user_input_and_save_db_as_file(tablename)
                 return
@@ -20,25 +30,29 @@ def scrape():
     except Exception as e:
         print(e)
         traceback.print_exc()
-        return
+        quit()
 
 
 def main_menu():
     while True:
 
-        user_option = input("""
-1. Scrape company
+        user_option = input(
+            """
+1. Get companies information
 2. Export database into xlsx and csv file
 3. Quit
 
-Choose Option (1/2/3) : """)
+
+Enter Option (1/2/3) : """)
+        if user_option and user_option.lower() == 'quit':
+            quit()
 
         if not user_option.isdigit():
             print('Input only number')
             continue
 
         if user_option == '1':
-            scrape()
+            execution()
 
         elif user_option == '2':
             user_input_and_save_db_as_file()

@@ -7,17 +7,17 @@ class YCombinatorTable(Base):
     __abstract__ = True
 
     id = Column(Integer, primary_key=True)
-    Name = Column(String, unique=True)
-    Batch = Column(String, nullable=False)
-    Sector = Column(String, nullable=False)
-    Region = Column(String, nullable=False)
-    Company_Desc = Column(String, nullable=False)
-    Founding_Date = Column(Integer, nullable=False)
-    Founders = Column(String, nullable=False)
-    Incubator = Column(String, nullable=False)
-    Location = Column(String, nullable=False)
-    Source_Url = Column(String, nullable=False)
-    Company_Url = Column(String, nullable=False)
+    Company_Name = Column(String, unique=True)
+    Batch = Column(String,)
+    Sector = Column(String,)
+    Region = Column(String,)
+    Company_Desc = Column(String,)
+    Founding_Date = Column(Integer,)
+    Founders = Column(String,)
+    Incubator = Column(String,)
+    Location = Column(String,)
+    Source_Url = Column(String, unique=True)
+    Company_Url = Column(String,)
 
 
 def get_existing_table_class(tablename):

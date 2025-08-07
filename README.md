@@ -1,32 +1,52 @@
 # Ycombinator website scraper
+
 This is a program to scrape company information from ycombinator website using selenium and save it into sqlite database using Sqlalchemy
 <br>
 
 ## Why I create this program ?
 
-Well the reason is simple, because I need the data of company in y combinator, and I willingly share the codes to you
+Well the reason is simple, because I need the data of company in ycombinator, and I willingly share the codes to you
 
 ## So, how to use this program ?
+<ol>
+<li>First of all you must have the latest Python and SQLite database in your device.</li> 
+<li>Next create virtual environment to keep your environment clean.</li>
 
-- First of all you must have python and sqlite database installed in your device.
-- Next install dependencies from requirement.txt file
+```
+  python -m venv .venv
+```
+
+<li>Don't forget to activate it with:</li>
+  <br>
+
+__Windows__
+
+``.venv\Scripts\activate``
+
+__Linux & MacOS__
+
+```
+source venv/bin/activate
+```
+<li>Let's install all required dependency</li> 
 
 ```
   pip install -r requirements.txt
 ```
 
-- After all dependencies got installed you can run
+<li>After all dependencies got installed you can run</li>
 
 ```
-    main.py
+   main.py
 ```
+</ol>
 
-- When main.py is running, there will be 3 options
+### When main.py is running, there will be 3 options
 
 1. Scrape Company
 2. Export database into xlsx and csv file
 3. Exit
-<br>
+   <br>
 
 <ul>
 <li> Scrape Company </li>
@@ -38,6 +58,7 @@ you need to fill several parameters which is Url, Number of company to scrape an
 <p> Take a look at the picture below </p>
 
 ![Screenshot 2025-01-07 114134](https://github.com/user-attachments/assets/a0ccc873-5c9c-4d1e-987d-daf7af1682b4)
+
 <ol>
 <p> 1. Use the filter to decide what kind of company you're loking for </p>
 <p> 2. Copy the url after choosing the filter and pass it into Url form</p>
@@ -50,7 +71,7 @@ you need to fill several parameters which is Url, Number of company to scrape an
 <br>
 • Table Name
 <p> This is a table to save the result inside database, you can use existing table and the program will append to latest 
-column automatically </p>
+column automatically. If you enter a new tablename, the program will use it </p>
 <br>
 
 </ol>
@@ -61,12 +82,14 @@ Export database into xlsx and csv file
 <br>
 
 • Table Name
+
 <p> Table name must be a table that exist in the database</p>
 
-• File name ( __Optional__ )
+• File name (Optional)
+
 <p> Fill this form with the name you want or leave it empty and the file's name will created automatically</p>
 
-• Sheet title and sheet description ( __Optional__ ) 
+• Sheet title and sheet description (Optional)
 
 ![ycombinator - Copy](https://github.com/user-attachments/assets/9bf180c6-ecb0-4f3b-9b14-8af6cf9ca0f8)
 
@@ -78,11 +101,13 @@ and description</p>
 <li>
 Exit
 <p> Close the program </p>
+<p> You can type exit in any form to close the program</p>
 </li>
 </ul>
 
+
 ## What does this program collected ?
 
-This program will scrape company name, batch, sector, region, company description, founding date, founders, incubator, 
-source url and company url. You can save it in a database only or as an Excel and Csv file too. The previous scraping 
-database result will stay, in case you lose the Excel file and need to save it 
+This program will scrape company name, batch, sector, region, company description, founding date, founders, incubator,
+source url and company url. You can save it in a database only or as an Excel and Csv file too. The previous scraping
+database result will stay, in case you lose the Excel file and need to save it
