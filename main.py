@@ -39,12 +39,13 @@ def main_menu():
         user_option = input(
             """
 1. Get companies information
-2. Export database into xlsx and csv file
+2. Export database 
 3. Quit
 
 
 Enter Option (1/2/3) : """)
         if user_option and user_option.lower() == 'quit':
+            print('Closing program')
             quit()
 
         if not user_option.isdigit():
