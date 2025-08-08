@@ -1,16 +1,16 @@
 # Ycombinator website scraper
 
-This is a program to scrape company information from ycombinator website using selenium and save it into sqlite database using Sqlalchemy. 
+This is a program to gather company information from the Y Combinator website using Selenium and save it into sqlite database using Sqlalchemy. 
 <br>
 
-## Why I create this program ?
+## Why did I create this program?
 
-Well the reason is simple, because I need the data of company in ycombinator, and I willingly share the codes to you
+Well, the reason is simple, because I need the data from the company in ycombinator.com, and I willingly share the code with you
 
-## So, how to use this program ?
+## So, how to use this program?
 <ol>
-<li>First of all you must have the latest Python, SQLite database, and a terminal in your device.</li> 
-<li>Next create virtual environment to keep your environment clean.</li>
+<li>First of all, you must have the latest Python, SQLite database, and a terminal on your device.</li> 
+<li>Next, create a virtual environment to keep your environment clean.</li>
 
 ```
   python -m venv .venv
@@ -34,7 +34,7 @@ source venv/bin/activate
   pip install -r requirements.txt
 ```
 
-<li>After all dependencies got installed you can run</li>
+<li>After all dependencies got installed, you can run</li>
 
 ```
    main.py
@@ -44,14 +44,14 @@ source venv/bin/activate
 ### When main.py is running, there will be 3 options
 
 1. Scrape Company
-2. Export database into xlsx and csv file
+2. Export database
 3. Exit
    <br>
 
 <ul>
 <li> Scrape Company </li>
-<p>As the option's name, you will scrape the company's information from this option. To scrape company's information 
-you need to fill several parameters which is URL, quantity of company to scrape, and table name</p>
+<p>As the option's name suggests, you will scrape the company's information from this option. To scrape a company's information, 
+you need to fill several parameters, which include the URL, the number of companies to scrape, and the table name</p>
 
 <ol>
 • Url 
@@ -60,40 +60,44 @@ you need to fill several parameters which is URL, quantity of company to scrape,
 ![Screenshot 2025-01-07 114134](https://github.com/user-attachments/assets/a0ccc873-5c9c-4d1e-987d-daf7af1682b4)
 
 <ol>
-<p> 1. Use the filter to decide what kind of company you're loking for </p>
-<p> 2. Copy the url after choosing the filter and pass it into Url form</p>
+<p> 1. Use the filter to decide what kind of company you're looking for </p>
+<p> 2. Copy the URL after choosing the filter and pass it into the URL form</p>
 </ol>
 
 <br>
-• Number of company
-<p> In this form you need to fill amount of company to scrape </p>
+• Number of companies
+<p> In this form, you need to fill in the quantity of the company to scrape </p>
 
 <br>
 • Table Name
-<p> This is a table to save the result inside database, you can use existing table and the program will append to latest 
+<p> This is a table to save the result inside the database. You can use the existing table, and the program will append to the latest 
 column automatically. If you enter a new tablename, the program will use it </p>
 <br>
 
 </ol>
 <li>
-Export database into xlsx and csv file 
-<p> To perform this option you will need to fill Table name, File name, Sheet title and Sheet description</p>
+Export database
+<p> To perform this option, you will need to fill Table name, File name, Sheet title, and Sheet description. The result will be saved as an Excel and a CSV file in </p>
+
+```
+C:\Users\[your_storage_name]\Downloads\Documents
+``` 
 <ol>
 <br>
 
 • Table Name
 
-<p> Table name must be a table that exist in the database</p>
+<p> Table name must be a table that exists in the database</p>
 
 • File name (Optional)
 
-<p> Fill this form with the name you want or leave it empty and the file's name will created automatically</p>
+<p> Fill this form with the name you want, or leave it empty and the file's name will be created automatically</p>
 
 • Sheet title and sheet description (Optional)
 
 ![ycombinator - Copy](https://github.com/user-attachments/assets/9bf180c6-ecb0-4f3b-9b14-8af6cf9ca0f8)
 
-<p> You can add a title and description according your needs. If you leave it blank, the program will use the default title 
+<p> You can add a title and description according to your needs. If you leave it blank, the program will use the default title 
 and description</p>
 
 </ol>
