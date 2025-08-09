@@ -7,12 +7,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from db_config import driver
+from sc.driver_management import create_driver
 from sc.util import check_data, insert_to_db
 
 
 def scrape_company_info(url: str, sectors: str = None):
+    driver = create_driver()
     try:
+
         driver.get(url)
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME,
                                                                         r'flex.flex-col.gap-8.sm\:flex-row')))
@@ -81,6 +83,7 @@ def scrape_with_count(url, table_class, scrape_count: int = None):
     issued_url = set()
     proceed_url = set()
     scraped_url = 0
+    driver = create_driver()
     try:
         driver.get(url)
         actions = ActionChains(driver)
@@ -177,6 +180,7 @@ def scrape_without_count(url, table_class):
     proceed_url = set()
     retry_count = 0
     max_retries = 5
+    driver = create_driver()
 
     try:
         driver.get(url)
