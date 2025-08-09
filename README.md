@@ -3,13 +3,11 @@
 This program gathers company information from the Y Combinator website using Selenium and saves it into a SQLite database with SQLAlchemy.  
 I made it because I needed the data myself, and I’m happy to share the code with you.
 
----
 
 ## Why did I create this program?
 
 Simple: I needed company data from ycombinator.com, and I thought, why not make the scraper and share it so others can benefit too?
 
----
 
 ## How to use this program
 
