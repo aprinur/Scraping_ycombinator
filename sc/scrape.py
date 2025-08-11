@@ -11,13 +11,8 @@ from sc.driver_management import create_driver
 from sc.util import check_data, insert_to_db
 
 
-def scrape_company_info(url: str, sectors: str = None):
-    driver = create_driver()
+def scrape_company_info(driver, sectors: str = None):
     try:
-
-        driver.get(url)
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME,
-                                                                        r'flex.flex-col.gap-8.sm\:flex-row')))
 
         table = driver.find_element(By.CLASS_NAME, 'space-y-3')
         company_name = table.find_element(By.CLASS_NAME, 'text-3xl.font-bold').text
@@ -27,12 +22,13 @@ def scrape_company_info(url: str, sectors: str = None):
 
         if sectors is None:
             sector = ', '.join(element.text for element in elements if 'industry' in element.get_attribute('href'))
+
         else:
             sector = sectors
 
         company_desc = driver.find_element(By.CLASS_NAME, 'prose.max-w-full.whitespace-pre-line').text
-        company_card = driver.find_element(By.CSS_SELECTOR, r'div[class="ycdc-card-new space-y-1.5 sm:w-[300px]"]')
 
+        company_card = driver.find_element(By.CSS_SELECTOR, r'div[class="ycdc-card-new space-y-1.5 sm:w-[300px]"]')
         founded_element = company_card.find_elements(By.XPATH, ".//div[.//span[text()='Founded:']]/span[2]")
         founded = founded_element[0].text if founded_element else None
 
@@ -84,8 +80,10 @@ def scrape_with_count(url, table_class, scrape_count: int = None):
     proceed_url = set()
     scraped_url = 0
     driver = create_driver()
+
     try:
         driver.get(url)
+        main_window = driver.current_window_handle
         actions = ActionChains(driver)
         previous_count = 0
 
@@ -94,12 +92,11 @@ def scrape_with_count(url, table_class, scrape_count: int = None):
             elements = driver.find_elements(By.CLASS_NAME, '_company_i9oky_355')
 
             for index, element in enumerate(elements):
+                elements = driver.find_elements(By.CLASS_NAME, '_company_i9oky_355')
                 if scraped_url >= scrape_count:
                     return None
 
-                elements = driver.find_elements(By.CLASS_NAME, '_company_i9oky_355')
                 element = elements[index]
-
                 url = element.get_attribute('href')
                 sector = get_sector(element)
 
@@ -107,25 +104,27 @@ def scrape_with_count(url, table_class, scrape_count: int = None):
                     continue
 
                 proceed_url.add(url)
-
-                driver.execute_script("window.open('');")
-                driver.switch_to.window(driver.window_handles[-1])
+                driver.switch_to.new_window('tab')
                 driver.get(url)
+                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME,
+                                                                                r'flex.flex-col.gap-8.sm\:flex-row')))
 
-                data = scrape_company_info(url, sector)
+                data = scrape_company_info(driver, sector)
                 if not data:
                     issued_url.add(url)
+                    driver.close()
+                    driver.switch_to.window(main_window)
                     continue
 
                 if not check_data(data, table_class):
                     insert_to_db(data, table_class)
                     scraped_url += 1
                 else:
-                    print(f'Data {data["Company_Name"]} already exist')
+                    print(f'{data["Company_Name"]} already exist in {table_class.__tablename__}')
                     scraped_url += 1
 
                 driver.close()
-                driver.switch_to.window(driver.window_handles[0])
+                driver.switch_to.window(main_window)
 
             try:
                 if scraped_url >= scrape_count:
@@ -191,6 +190,7 @@ def scrape_without_count(url, table_class):
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, '_company_i9oky_355')))
             elements = driver.find_elements(By.CSS_SELECTOR, '._company_i9oky_355')
 
+            main_window = driver.current_window_handle
             for index, element in enumerate(elements):
                 elements = driver.find_elements(By.CSS_SELECTOR, '._company_i9oky_355')
                 element = elements[index]
@@ -203,8 +203,7 @@ def scrape_without_count(url, table_class):
 
                 proceed_url.add(url)
 
-                driver.execute_script("window.open('');")
-                driver.switch_to.window(driver.window_handles[-1])
+                driver.switch_to.new_window('tab')
                 driver.get(url)
 
                 data = scrape_company_info(url, sector)
@@ -213,13 +212,13 @@ def scrape_without_count(url, table_class):
                         insert_to_db(data, table_class)
                         print(f'Inserted to database: {data["Company_Name"]}')
                     else:
-                        print(f'Record already exist: {data["Company_Name"]}')
+                        print(f'{data["Company_Name"]} already exist in {table_class.__tablename__}')
 
                 else:
                     issued_url.append(url)
 
                 driver.close()
-                driver.switch_to.window(driver.window_handles[0])
+                driver.switch_to.window(main_window)
 
             current_count = len(elements)
             if current_count == previous_count:
