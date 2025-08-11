@@ -16,8 +16,7 @@ def execution():
         tablename = parameter['table_name']
 
         if count is not None:
-            if not scrape_with_count(url, table_class=table_class, scrape_count=count):
-                return
+            scrape_with_count(url, table_class=table_class, scrape_count=count)
             if save_as_file_confirm():
                 user_input_and_save_db_as_file(tablename)
                 return

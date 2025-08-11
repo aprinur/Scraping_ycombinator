@@ -16,8 +16,9 @@ def scrape_company_info(driver, sectors: str = None):
 
         table = driver.find_element(By.CLASS_NAME, 'space-y-3')
         company_name = table.find_element(By.CLASS_NAME, 'text-3xl.font-bold').text
-        batch = table.find_element(By.CLASS_NAME, r'flex.flex-row.items-center.gap-\[6px\]').find_element(By.TAG_NAME,
-                                                                                                          'span').text
+        batch = table.find_element(By.CLASS_NAME, r'flex.flex-row.items-center.gap-\[6px\]').find_element(
+            By.TAG_NAME, 'span').text if 'flex flex-row items-center gap-[6px]' in driver.page_source else None
+
         elements = table.find_element(By.CSS_SELECTOR, 'div.align-center').find_elements(By.TAG_NAME, 'a')
 
         if sectors is None:
