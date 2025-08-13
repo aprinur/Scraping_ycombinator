@@ -73,6 +73,8 @@ def user_input_and_save_db_as_file(db_table=None):
         while True:
             inspector = inspect(engine)
             print('\nTables in database:')
+            if not inspector.get_table_names():
+                print('Database is empty')
             for num, table in enumerate(inspector.get_table_names()):
                 print(f'{num+1}. {table}')
 

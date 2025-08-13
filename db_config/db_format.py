@@ -17,12 +17,11 @@ class YCombinatorTable(Base):
     Company_Name = Column(String, unique=True)
     Batch = Column(String,)
     Sector = Column(String,)
-    Region = Column(String,)
+    Location = Column(String,)
     Company_Desc = Column(String,)
     Founding_Date = Column(Integer,)
     Founders = Column(String,)
     Incubator = Column(String,)
-    Location = Column(String,)
     Source_Url = Column(String, unique=True)
     Company_Url = Column(String,)
 

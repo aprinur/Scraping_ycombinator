@@ -48,7 +48,7 @@ def scrape_company_info(driver, sectors: str = None):
             founders.append(f"{name} ({position if position else ''})")
         founders = ' | '.join(founders)
         company_url = driver.find_element(By.CSS_SELECTOR, r'.mb-2.whitespace-nowrap.md\:mb-0').get_attribute('href')
-        region = ' '.join(element.text for element in elements if 'location' in element.get_attribute('href'))
+
         source_url = driver.current_url
         incubator = driver.find_element(By.CSS_SELECTOR, r'.mt-8.text-base.md\:order-1.md\:mt-0').text.removeprefix(
             '© 2025 ')
@@ -57,7 +57,6 @@ def scrape_company_info(driver, sectors: str = None):
             "Company_Name": company_name,
             "Batch": batch,
             "Sector": sector,
-            "Region": region,
             "Company_Desc": company_desc,
             "Founding_Date": founded,
             "Founders": founders,
@@ -132,7 +131,7 @@ def scrape_with_count(url, table_class, scrape_count: int = None):
                     return True
                 last_element = elements[-1]
                 actions.move_to_element(last_element).perform()
-                time.sleep(1)
+                time.sleep(2)
 
                 new_elements = driver.find_elements(By.CLASS_NAME, '_company_i9oky_355')
                 if len(new_elements) == previous_count:
@@ -166,11 +165,11 @@ def scrape_with_count(url, table_class, scrape_count: int = None):
 
 def get_sector(element) -> str | None:
     """ Function to scrape sector """
-    main_url = 'https://www.ycombinator.com'
+
     try:
         elements = element.find_elements(By.CSS_SELECTOR, '._tagLink_i9oky_1040')
         sector = ", ".join([i.text for i in elements if 'industry' in i.get_attribute('href')])
-        return f'{main_url}{sector}'
+        return sector
     except NoSuchElementException:
         return None
 
